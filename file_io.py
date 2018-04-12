@@ -7,10 +7,9 @@
 # visit http://creativecommons.org/licenses/by-nc-sa/4.0/.          #
 #####################################################################
 
-import ConfigParser
+import configparser
 import os
 import sys
-
 import numpy as np
 
 
@@ -24,9 +23,9 @@ def read_lightfield(data_folder):
         fpath = os.path.join(data_folder, view)
         try:
             img = read_img(fpath)
-            light_field[idx / params["num_cams_x"], idx % params["num_cams_y"], :, :, :] = img
+            light_field[int(idx / params["num_cams_x"]), int(idx % params["num_cams_y"]), :, :, :] = img
         except IOError:
-            print "Could not read input file: %s" % fpath
+            print("Could not read input file: %s" % fpath)
             sys.exit()
 
     return light_field
@@ -36,8 +35,8 @@ def read_parameters(data_folder):
     params = dict()
 
     with open(os.path.join(data_folder, "parameters.cfg"), "r") as f:
-        parser = ConfigParser.ConfigParser()
-        parser.readfp(f)
+        parser = configparser.ConfigParser()
+        parser.read_file(f)
 
         section = "intrinsics"
         params["width"] = int(parser.get(section, 'image_resolution_x_px'))
@@ -80,7 +79,7 @@ def read_depth(data_folder, highres=False):
     try:
         data = read_pfm(fpath)
     except IOError:
-        print "Could not read depth file: %s" % fpath
+        print("Could not read depth file: %s" % fpath)
         sys.exit()
     return data
 
@@ -90,7 +89,7 @@ def read_disparity(data_folder, highres=False):
     try:
         data = read_pfm(fpath)
     except IOError:
-        print "Could not read disparity file: %s" % fpath
+        print("Could not read disparity file: %s" % fpath)
         sys.exit()
     return data
 
@@ -116,16 +115,16 @@ def write_pfm(data, fpath, scale=1, file_identifier="Pf", dtype="float32"):
     height, width = np.shape(data)[:2]
     values = np.ndarray.flatten(np.asarray(data, dtype=dtype))
     endianess = data.dtype.byteorder
-    print endianess
+    print(endianess)
 
     if endianess == '<' or (endianess == '=' and sys.byteorder == 'little'):
         scale *= -1
 
     with open(fpath, 'wb') as file:
-        file.write(file_identifier + '\n')
-        file.write('%d %d\n' % (width, height))
-        file.write('%d\n' % scale)
-        file.write(values)
+        file.write((file_identifier + '\n').encode())
+        file.write(('%d %d\n' % (width, height)).encode())
+        file.write(('%d\n' % scale).encode())
+        file.write(values.tobytes())
 
 
 def read_pfm(fpath, expected_identifier="Pf"):
@@ -133,12 +132,12 @@ def read_pfm(fpath, expected_identifier="Pf"):
 
     with open(fpath, 'rb') as f:
         #  header
-        identifier = _get_next_line(f)
+        identifier = _get_next_line(f).decode()
         if identifier != expected_identifier:
             raise Exception('Unknown identifier. Expected: "%s", got: "%s".' % (expected_identifier, identifier))
 
         try:
-            line_dimensions = _get_next_line(f)
+            line_dimensions = _get_next_line(f).decode()
             dimensions = line_dimensions.split(' ')
             width = int(dimensions[0].strip())
             height = int(dimensions[1].strip())
@@ -147,7 +146,7 @@ def read_pfm(fpath, expected_identifier="Pf"):
                             'Expected "width height", e.g. "512 512".' % line_dimensions)
 
         try:
-            line_scale = _get_next_line(f)
+            line_scale = _get_next_line(f).decode()
             scale = float(line_scale)
             assert scale != 0
             if scale < 0:
@@ -173,6 +172,6 @@ def read_pfm(fpath, expected_identifier="Pf"):
 def _get_next_line(f):
     next_line = f.readline().rstrip()
     # ignore comments
-    while next_line.startswith('#'):
+    while next_line.startswith('#'.encode()):
         next_line = f.readline().rstrip()
     return next_line

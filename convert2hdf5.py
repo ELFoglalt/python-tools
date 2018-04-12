@@ -34,5 +34,5 @@ if __name__ == '__main__':
     data_folders = util.parse_options()
 
     for data_folder in data_folders:
-        print "converting: %s" % data_folder
+        print("converting: %s" % data_folder)
         convert_to_hdf5(data_folder)

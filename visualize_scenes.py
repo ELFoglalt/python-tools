@@ -21,7 +21,7 @@ def visualize_scene(data_folder):
     params = file_io.read_parameters(data_folder)
 
     if params["category"] == "test":
-        print "Test scenes with hidden ground truth are not visualized."
+        print("Test scenes with hidden ground truth are not visualized.")
         return
 
     light_field = file_io.read_lightfield(data_folder)
@@ -65,5 +65,5 @@ if __name__ == '__main__':
     data_folders = util.parse_options()
 
     for data_folder in data_folders:
-        print "visualizing: %s" % data_folder
+        print("visualizing: %s" % data_folder)
         visualize_scene(data_folder)
