@@ -6,7 +6,7 @@ No functional changes have been made. For a detailed description on how to use, 
 
 # Dependencies
 
-The scripts are tested with Python 3. The minimum dependencies are listed in `requirements.txt96`. The modules `h5py` and `matplotlib` are optional. They are only required for the conversion/visualization.
+The scripts are tested with Python 3. The minimum dependencies are listed in `requirements.txt`. The modules `h5py` and `matplotlib` are optional. They are only required for the conversion/visualization.
 
 
 # License
